@@ -5,9 +5,9 @@
 Akane is a collection of Machine Learning algorithm for Regression, Classification, and Clustering. Currently, Akane provides the following algorithm:
 - **Regression**
     - Simple Linear Regression
-    - Linear Regression with L~1~ Regularization (a.k.a. Lasso Regression)
-    - Linear Regression with L~2~ Regularization (a.k.a. Ridge Regression)
-    - Linear Regression With L~1~ & L~2~ Regularization (a.k.a. Elastic Net)
+    - Linear Regression with L1 Regularization (a.k.a. Lasso Regression)
+    - Linear Regression with L2 Regularization (a.k.a. Ridge Regression)
+    - Linear Regression With L1 & L2 Regularization (a.k.a. Elastic Net)
     - Polynomial Regression
     - Kernel Regression
 
