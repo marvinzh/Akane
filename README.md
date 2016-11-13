@@ -1,8 +1,8 @@
 ## Akane
-### a collection of Machine Learning algorithm for Regression, Classification and Clustering
+### a collection of Machine Learning algorithms for Regression, Classification and Clustering
 
 ###Introduction
-Akane is a collection of Machine Learning algorithm for Regression, Classification, and Clustering. Currently, Akane provides the following algorithm:
+Akane is a collection of Machine Learning algorithms for Regression, Classification, and Clustering. Currently, Akane provides the following algorithms:
 - **Regression**
     - Simple Linear Regression
     - Linear Regression with L1 Regularization (a.k.a. Lasso Regression)
