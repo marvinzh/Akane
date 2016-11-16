@@ -7,6 +7,7 @@ import time
 import message
 import utilities
 import strings
+import clustering
 
 dic = strings.AKANE_EN
 
@@ -301,6 +302,7 @@ def neural_networks(data,
                     activation=utilities.sigmoid,
                     activation_grad=utilities.sigmoid_gradient,
                     solver='lbfgs',
+                    data_weights=None,
                     max_iteration=300,
                     l2_penalty=0.,
                     silent_mode=False):
@@ -360,4 +362,48 @@ def neural_networks(data,
     # detail[dic['T_RSS']] = costs[-1] if type(costs) == list else costs
     message.model_reporter(silent_mode, "Neural Networks", profile, detail)
 
+    return model
+
+
+def kmeans(data,
+           features,
+           k,
+           distance_func=utilities.euclidean_distance,
+           initial_centroids=None,
+           initial_method='random',
+           heterogeneity=None,
+           max_iteration=500,
+           silent_mode=False
+           ):
+    start_timestamp = time.time()
+
+    data = pd.DataFrame(data)
+
+    feature_matrix = data.loc[:, features]
+
+    if initial_centroids is None:
+        initial_centroids = clustering.initialize_centroid(feature_matrix, k, method=initial_method, distance_func=distance_func)
+
+    centroids, assignments, max_iteration = clustering.kmeans_train(feature_matrix,
+                                                                    k,
+                                                                    distance_func,
+                                                                    initial_centroids=initial_centroids,
+                                                                    heterogeneity_record=heterogeneity,
+                                                                    max_iteration=max_iteration,
+                                                                    silent_mode=silent_mode,
+                                                                    )
+
+    elapse = time.time() - start_timestamp
+    profile = {
+        dic['K']: k,
+        dic['DIST']: distance_func.__name__,
+    }
+    detail = {
+        dic['ITER']: max_iteration,
+        dic['EPS_TIME']: elapse,
+    }
+
+    message.model_reporter(silent_mode, "K-Means", profile, detail)
+
+    model = models.KMeansModel(profile, detail, k, centroids, assignments, heterogeneity)
     return model
