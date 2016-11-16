@@ -42,4 +42,4 @@ I implemented these algorithms from scratch. currently, there are still lots of 
 
 
 ### Update notes
-- 2016-11-16 add k-means algorithm
+- *2016-11-16* add k-means algorithm
