@@ -240,7 +240,7 @@ class AdaboostModel(Model):
 class NeuralNetworkModel(Model):
     def __init__(self, profile, detail, weights, architecture, activation):
         super(NeuralNetworkModel, self).__init__(profile, detail)
-        self.type = dic["NN_M"]
+        self.type = dic["NEN_M"]
 
         self.weights = weights
         self.architecture = architecture
@@ -262,4 +262,39 @@ class NeuralNetworkModel(Model):
         return predictions
 
 
+class KMeansModel(Model):
+    def __init__(self, profile, detail, k, centroids, assignments, heterogeneity):
+        super(KMeansModel, self).__init__(profile, detail)
+        self.type = dic["KM_M"]
 
+        self.k = k
+        self.centroids = centroids
+        self.assignments = assignments
+        self.heterogeneity = heterogeneity
+
+    def assign(self, data):
+        pass
+
+
+if __name__ == '__main__':
+    profile = [
+        #  Num of data points
+        1000,
+        #  num of feature
+        123,
+        # num of input
+        124,
+        # solver
+        "test solver",
+    ]
+    details = [
+        # num of iteration
+        123,
+        #  elapse time
+        123.456,
+        # cost
+        12345678,
+    ]
+    model = LinearRegressionModel([1, 2, 3], profile, details)
+    # print(model.weights)
+    model.model_profile()
