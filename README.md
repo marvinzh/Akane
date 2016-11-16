@@ -35,7 +35,7 @@ I implemented these algorithms from scratch. currently, there are still lots of 
 - EM Implementation
 - KD-tree and Locality Sensitive Hashing(LSH) implementation (for nearest neighbour)
 - Support Vector Machine Implementation
-- examples
+- practical examples
 - development notes
 - test unit
 - API documentation
