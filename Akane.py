@@ -382,7 +382,10 @@ def kmeans(data,
     feature_matrix = data.loc[:, features]
 
     if initial_centroids is None:
-        initial_centroids = clustering.initialize_centroid(feature_matrix, k, method=initial_method, distance_func=distance_func)
+        initial_centroids = clustering.initialize_centroid(feature_matrix,
+                                                           k,
+                                                           method=initial_method,
+                                                           distance_func=distance_func)
 
     centroids, assignments, max_iteration = clustering.kmeans_train(feature_matrix,
                                                                     k,
@@ -390,8 +393,7 @@ def kmeans(data,
                                                                     initial_centroids=initial_centroids,
                                                                     heterogeneity_record=heterogeneity,
                                                                     max_iteration=max_iteration,
-                                                                    silent_mode=silent_mode,
-                                                                    )
+                                                                    silent_mode=silent_mode, )
 
     elapse = time.time() - start_timestamp
     profile = {
@@ -405,5 +407,5 @@ def kmeans(data,
 
     message.model_reporter(silent_mode, "K-Means", profile, detail)
 
-    model = models.KMeansModel(profile, detail, k, centroids, assignments, heterogeneity)
+    model = models.KMeansModel(profile, detail, k, centroids, assignments, heterogeneity, distance_func)
     return model

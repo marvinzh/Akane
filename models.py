@@ -273,28 +273,31 @@ class KMeansModel(Model):
         self.heterogeneity = heterogeneity
 
     def assign(self, data):
-        pass
+        data = np.array(data)
+        distance = self.distance_func(self.centroids, data)
+        assignments = np.argmin(distance, axis=1)
+        return assignments
 
 
-if __name__ == '__main__':
-    profile = [
-        #  Num of data points
-        1000,
-        #  num of feature
-        123,
-        # num of input
-        124,
-        # solver
-        "test solver",
-    ]
-    details = [
-        # num of iteration
-        123,
-        #  elapse time
-        123.456,
-        # cost
-        12345678,
-    ]
-    model = LinearRegressionModel([1, 2, 3], profile, details)
-    # print(model.weights)
-    model.model_profile()
+# if __name__ == '__main__':
+#     profile = [
+#         #  Num of data points
+#         1000,
+#         #  num of feature
+#         123,
+#         # num of input
+#         124,
+#         # solver
+#         "test solver",
+#     ]
+#     details = [
+#         # num of iteration
+#         123,
+#         #  elapse time
+#         123.456,
+#         # cost
+#         12345678,
+#     ]
+#     model = LinearRegressionModel([1, 2, 3], profile, details)
+#     # print(model.weights)
+    # model.model_profile()
