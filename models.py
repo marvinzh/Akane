@@ -279,6 +279,27 @@ class KMeansModel(Model):
         return assignments
 
 
+class GaussianMixureModel(Model):
+    def __init__(self, profile, detail, weights, means, covs, log_likelihood, responsibility):
+        super(GaussianMixureModel, self).__init__(profile, detail)
+        self.type = dic['GMM']
+
+        self.weights = weights
+        self.means = means
+        self.covariances = covs
+        self.log_likelihood = log_likelihood
+        self.responsibility = responsibility
+        self.k = len(means)
+
+    def assign(self, data):
+        assignments = []
+        for i in range(self.k):
+            assignment = multivariate_normal(data, self.means[i], self.covariances[i])
+            assignments.append(assignment)
+
+        return np.array(assignments)
+
+
 # if __name__ == '__main__':
 #     profile = [
 #         #  Num of data points

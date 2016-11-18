@@ -409,3 +409,55 @@ def kmeans(data,
 
     model = models.KMeansModel(profile, detail, k, centroids, assignments, heterogeneity, distance_func)
     return model
+
+
+def gaussian_mixure_model(data,
+                          features,
+                          k,
+                          initial_weights=None,
+                          initial_mu=None,
+                          initial_cov=None,
+                          initial_method=None,
+                          threshold=1e-4,
+                          max_iteration=500,
+                          silent_mode=False):
+    start_timestamp = time.time()
+
+    data = pd.DataFrame(data)
+    feature_matrix = np.array(data.loc[:, features])
+
+    if initial_weights is None:
+        initial_weights = clustering.gmm_init_weight(feature_matrix, k, initial_method)
+
+    if initial_mu is None:
+        initial_mu = clustering.gmm_init_mu(feature_matrix, k, initial_method)
+
+    if initial_cov is None:
+        initial_cov = clustering.gmm_init_cov(feature_matrix, k, initial_method)
+
+    result = clustering.em_for_gmm(feature_matrix,
+                                   initial_mu,
+                                   initial_cov,
+                                   initial_weights,
+                                   max_iteration,
+                                   threshold,
+                                   silent_mode)
+
+    elapse = time.time() - start_timestamp
+
+    profile = {
+        dic['NUM_OF_EX']: len(data),
+        dic['NUM_OF_FE']: len(features),
+        dic['K']: k
+    }
+    detail = {
+        dic['ITER']: max_iteration,
+        dic['EPS_TIME']: elapse,
+        dic['THRESHOLD']: threshold,
+    }
+
+    model = models.GaussianMixureModel(profile, detail, result['weights'], result['means'], result['covs'], result['loglik'], result['resp'])
+
+    message.model_reporter(silent_mode, "Gaussian Mixure Model", profile, detail)
+
+    return model
