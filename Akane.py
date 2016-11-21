@@ -8,6 +8,7 @@ import message
 import utilities
 import strings
 import clustering
+from akane_exception import *
 
 dic = strings.AKANE_EN
 
@@ -15,25 +16,42 @@ dic = strings.AKANE_EN
 # parameter
 # dataset: pandas DataFrame
 # feature: training feature
-def linear_regression(dataset,
-                      target,
-                      feature,
-                      initial_weights=None,
-                      l1_penalty=0,
-                      l2_penalty=0.,
-                      step_size=0.,
-                      max_iteration=0,
+def linear_regression(dataset: pd.DataFrame,
+                      target: list(str),
+                      features: list(str),
+                      initial_weights: list = None,
+                      l1_penalty: float = 0.,
+                      l2_penalty: float = 0.,
+                      step_size: float = 0.,
+                      max_iteration: int = 0,
                       solver='auto',
-                      tolerance=0.,
-                      silent_mode=False):
+                      tolerance: float = 0.,
+                      silent_mode: bool = False):
+    """
+    Function to create a Simple Linear Regression model, by adding L1 or L2 penalty term, to use the Lasso/Ridge
+    Regression, Elastic Net. Note that if you add L1 penalty(set L1_penalty non-zero) to model, model will be forced
+    trained by Coordinate Descent Algorithm.
+    :param dataset: should be a Pandas DataFrame, with each data point stored in row-wise.
+    :param target: should be a list Object(python built-in)
+    :param features: should be a list Object(python built-in)
+    :param initial_weights: should be a list Object(python built-in)
+    :param l1_penalty: should be a float Object
+    :param l2_penalty: should be a float Object
+    :param step_size: should be a float Object
+    :param max_iteration: should be a integer Object, note that the model may be converged before maximum iteration
+    :param solver: should be a string in 'auto' 'gradient_descent' 'coordinate_descent' 'lbfgs'
+    :param tolerance: should be a float Object
+    :param silent_mode: should be a boolean Object, True to turn on the silent mode
+    :return: model:
+    """
     start_timestamp = time.time()
     dataset = pd.DataFrame(dataset)
 
-    training_matrix = dataset.loc[:, feature]
-    weights = np.zeros(len(feature)) if initial_weights is None else np.array(initial_weights)
+    training_matrix = dataset.loc[:, features]
+    weights = np.zeros(len(features)) if initial_weights is None else np.array(initial_weights)
     output = dataset[target]
 
-    training_feature = feature
+    training_feature = features
     cost = 0.
 
     if "(constant)" not in list(training_matrix.columns):
@@ -62,10 +80,12 @@ def linear_regression(dataset,
                                                     max_iteration, tolerance,
                                                     l2_penalty,
                                                     silent_mode)
+    elif solver == "lbfgs":
+        pass
     elif solver == "auto":
-        pass
+        raise NoImplementationError("No Implementation.")
     else:
-        pass
+        raise InvalidParamError("Akane do not understand parameter solver=%s" % solver)
 
     weights = pd.Series(weights, index=training_feature)
 
@@ -74,7 +94,7 @@ def linear_regression(dataset,
 
     profile = {
         dic['NUM_OF_EX']: training_matrix.shape[0],
-        dic['NUM_OF_FE']: len(feature),
+        dic['NUM_OF_FE']: len(features),
         dic['NUM_OF_CO']: len(weights),
         dic['SOLVER']: solver,
     }
