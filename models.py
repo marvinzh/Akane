@@ -263,7 +263,7 @@ class NeuralNetworkModel(Model):
 
 
 class KMeansModel(Model):
-    def __init__(self, profile, detail, k, centroids, assignments, heterogeneity):
+    def __init__(self, profile, detail, k, centroids, assignments, heterogeneity,distance_func):
         super(KMeansModel, self).__init__(profile, detail)
         self.type = dic["KM_M"]
 
@@ -271,6 +271,7 @@ class KMeansModel(Model):
         self.centroids = centroids
         self.assignments = assignments
         self.heterogeneity = heterogeneity
+        self.distance_func = distance_func
 
     def assign(self, data):
         data = np.array(data)

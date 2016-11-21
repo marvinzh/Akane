@@ -456,7 +456,13 @@ def gaussian_mixure_model(data,
         dic['THRESHOLD']: threshold,
     }
 
-    model = models.GaussianMixureModel(profile, detail, result['weights'], result['means'], result['covs'], result['loglik'], result['resp'])
+    model = models.GaussianMixureModel(profile,
+                                       detail,
+                                       result['weights'],
+                                       result['means'],
+                                       result['covs'],
+                                       result['loglik'],
+                                       result['resp'])
 
     message.model_reporter(silent_mode, "Gaussian Mixure Model", profile, detail)
 
