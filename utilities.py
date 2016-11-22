@@ -205,10 +205,11 @@ def l_bfgs(feature_matrix: np.ndarray,
     optimal_weights = [0]
 
     def f(x, g):
-        # gradients = calculate_derivative(feature_matrix, x, output, l2_penalty)
-        gradients = calculate_derivative(feature_matrix, x, output)
+        gradients = calculate_derivative(feature_matrix, x, output, l2_penalty)
+        # gradients = calculate_derivative(feature_matrix, x, output)
         g[:len(gradients)] = gradients
         return cost_function(feature_matrix, x, output, l2_penalty)
+        # return cost_function(feature_matrix, x, output)
 
     def progress(x, g, cost, xnorm, gnorm, step, k, ls):
         """
