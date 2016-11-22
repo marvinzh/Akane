@@ -29,20 +29,22 @@ def linear_regression(dataset: pd.DataFrame,
                       silent_mode: bool = False):
     """
     Function to create a Simple Linear Regression model, by adding L1 or L2 penalty term, to use the Lasso/Ridge
-    Regression, Elastic Net. Note that if you add L1 penalty(set L1_penalty non-zero) to model, model will be forced
-    trained by Coordinate Descent Algorithm.
+    Regression, Elastic Net. Note that if you add L1 penalty(set L1_penalty non-zero) to model, akane will be forced
+    to train model by Coordinate Descent Algorithm.
+
     :param dataset: should be a Pandas DataFrame, with each data point stored in row-wise.
     :param target: should be a list Object(python built-in)
     :param features: should be a list Object(python built-in)
     :param initial_weights: should be a list Object(python built-in)
-    :param l1_penalty: should be a float Object
-    :param l2_penalty: should be a float Object
-    :param step_size: should be a float Object
-    :param max_iteration: should be a integer Object, note that the model may be converged before maximum iteration
+    :param l1_penalty: should be a float Object(python built-in)
+    :param l2_penalty: should be a float Object(python built-in)
+    :param step_size: should be a float Object(python built-in)
+    :param max_iteration: should be a integer Object(python built-in), note that the model may be converged before
+    maximum iteration
     :param solver: should be a string in 'auto' 'gradient_descent' 'coordinate_descent' 'lbfgs'
-    :param tolerance: should be a float Object
-    :param silent_mode: should be a boolean Object, True to turn on the silent mode
-    :return: model:
+    :param tolerance: should be a float Object(python built-in)
+    :param silent_mode: should be a boolean Object(python built-in), True to turn on the silent mode, and vice versa
+    :return: model Object
     """
     start_timestamp = time.time()
     dataset = pd.DataFrame(dataset)
@@ -81,9 +83,10 @@ def linear_regression(dataset: pd.DataFrame,
                                                     l2_penalty,
                                                     silent_mode)
     elif solver == "lbfgs":
+        weights, cost, max_iteration = utilities.l_bfgs(training_feature, output, weights, )
         pass
     elif solver == "auto":
-        raise NoImplementationError("No Implementation.")
+        raise NoImplementationError("No Implementation yet.")
     else:
         raise InvalidParamError("Akane do not understand parameter solver=%s" % solver)
 
