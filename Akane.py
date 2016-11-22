@@ -13,9 +13,6 @@ from akane_exception import *
 dic = strings.AKANE_EN
 
 
-# parameter
-# dataset: pandas DataFrame
-# feature: training feature
 def linear_regression(dataset: pd.DataFrame,
                       target: list(str),
                       features: list(str),
@@ -49,20 +46,23 @@ def linear_regression(dataset: pd.DataFrame,
     start_timestamp = time.time()
     dataset = pd.DataFrame(dataset)
 
-    training_matrix = dataset.loc[:, features]
+    feature_matrix_data = dataset.loc[:, features]
     weights = np.zeros(len(features)) if initial_weights is None else np.array(initial_weights)
     output = dataset[target]
 
-    training_feature = features
-    cost = 0.
+    training_features = features
+    costs = 0.
 
-    if "(constant)" not in list(training_matrix.columns):
-        training_matrix['(constant)'] = 1.
-        training_feature += ['(constant)']
+    if "(constant)" not in list(feature_matrix_data.columns):
+        feature_matrix_data['(constant)'] = 1.
+        training_features += ['(constant)']
         weights = np.append(weights, [0.])
 
+    if solver == 'auto':
+        raise NoImplementationError("No Implementation yet!")
+
     if l1_penalty != 0.:
-        weights = regression.coordinate_descent(training_matrix,
+        weights = regression.coordinate_descent(feature_matrix_data,
                                                 weights,
                                                 output,
                                                 max_iteration,
@@ -71,40 +71,45 @@ def linear_regression(dataset: pd.DataFrame,
                                                 l2_penalty,
                                                 silent_mode)
     elif solver == 'least_square':
-        weights, cost = regression.lr_least_square(training_matrix, output, l2_penalty)
+        weights, costs = regression.lr_least_square(feature_matrix_data, output, l2_penalty)
     elif solver == "gradient_descent":
-        weights, cost = regression.gradient_descent(training_matrix,
-                                                    output,
-                                                    weights,
-                                                    regression.lr_cost_function,
-                                                    regression.lr_derivative,
-                                                    step_size,
-                                                    max_iteration, tolerance,
-                                                    l2_penalty,
-                                                    silent_mode)
+        weights, costs = regression.gradient_descent(feature_matrix_data,
+                                                     output,
+                                                     weights,
+                                                     regression.lr_cost_function,
+                                                     regression.lr_derivative,
+                                                     step_size,
+                                                     max_iteration, tolerance,
+                                                     l2_penalty,
+                                                     silent_mode)
     elif solver == "lbfgs":
-        weights, cost, max_iteration = utilities.l_bfgs(training_feature, output, weights, )
-        pass
-    elif solver == "auto":
-        raise NoImplementationError("No Implementation yet.")
+        weights, costs, max_iteration = utilities.l_bfgs(training_features,
+                                                         output,
+                                                         weights,
+                                                         regression.lr_cost_function,
+                                                         lambda a, b, c, d: regression.lr_derivative(b, a, c, d),
+                                                         iter_times=max_iteration,
+                                                         l2_penalty=l2_penalty,
+                                                         silent_mode=silent_mode
+                                                         )
     else:
         raise InvalidParamError("Akane do not understand parameter solver=%s" % solver)
 
-    weights = pd.Series(weights, index=training_feature)
+    weights = pd.Series(weights, index=training_features)
 
-    cost = np.array(cost) if type(cost) == list else cost
+    costs = np.array(costs) if type(costs) == list else costs
     elapse = time.time() - start_timestamp
 
     profile = {
-        dic['NUM_OF_EX']: training_matrix.shape[0],
+        dic['NUM_OF_EX']: feature_matrix_data.shape[0],
         dic['NUM_OF_FE']: len(features),
         dic['NUM_OF_CO']: len(weights),
         dic['SOLVER']: solver,
     }
     details = {
-        dic['ITER']: max_iteration if solver == 'gradient_descent' else 1,
+        dic['ITER']: 1 if solver == 'least_square' else max_iteration,
         dic['EPS_TIME']: elapse,
-        dic['T_RSS']: cost,
+        dic['T_RSS']: costs,
     }
     if l1_penalty != 0.:
         details[dic['L1_P']] = l1_penalty

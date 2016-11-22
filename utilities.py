@@ -157,7 +157,7 @@ def softplus_gradient(scores):
     return g
 
 
-def one_hot_encoder(vector,num_of_class):
+def one_hot_encoder(vector, num_of_class):
     vector = np.array(vector)
     code = np.zeros((len(vector), num_of_class))
     index = vector
@@ -169,15 +169,26 @@ def one_hot_encoder(vector,num_of_class):
 
 # cost_function@param receive at least 4 parameter: feature_matrix,weights,output
 # calculate_derivative@param receive at least 4 parameter: feature_matrix,weights,output
-def l_bfgs(feature_matrix,
-           output,
-           initial_weights,
+def l_bfgs(feature_matrix: np.ndarray,
+           output: np.ndarray,
+           initial_weights: np.ndarray,
            cost_function,
            calculate_derivative,
            iter_times=500,
            l2_penalty=0.,
            silent_mode=False,
            ):
+    """
+    :param feature_matrix: should be a matrix, with each data point stored in row-wise.
+    :param output: should be a vector
+    :param initial_weights: should be a vector
+    :param cost_function: should be a function Object receive at least 4 parameter: feature_matrix, weights, output, l2
+    :param calculate_derivative: should be a function Object receive at least 4 parameter: feature_matrix, weights, output, l2
+    :param iter_times: should be a Integer Object.
+    :param l2_penalty: should be a float Object.
+    :param silent_mode: should be a boolean Object(python built-in), True to turn on the silent mode, and vice versa
+    :return: weights: numpy.ndarray, costs: list, iteration: int
+    """
     reporter = message.Reporter(silent_mode)
 
     feature_matrix = np.array(feature_matrix, dtype='float64')
@@ -194,7 +205,8 @@ def l_bfgs(feature_matrix,
     optimal_weights = [0]
 
     def f(x, g):
-        gradients = calculate_derivative(feature_matrix, x, output, l2_penalty)
+        # gradients = calculate_derivative(feature_matrix, x, output, l2_penalty)
+        gradients = calculate_derivative(feature_matrix, x, output)
         g[:len(gradients)] = gradients
         return cost_function(feature_matrix, x, output, l2_penalty)
 
@@ -228,8 +240,4 @@ def l_bfgs(feature_matrix,
     optimal_weights = np.array(infos[0])
     iter_times = infos[1]
 
-
     return optimal_weights, costs, iter_times
-
-
-
