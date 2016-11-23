@@ -10,7 +10,15 @@ dic = strings.UTILITIES_EN
 # return parameter
 # scalar cost(float)
 # error n-dim vector(np.array)
-def lr_cost_function(feature_matrix, weights, output, l2_penalty):
+def lr_cost_function(feature_matrix: np.ndarray, weights: np.ndarray, output: np.ndarray, l2_penalty: float) -> float:
+    """
+
+    :param feature_matrix:
+    :param weights:
+    :param output:
+    :param l2_penalty:
+    :return:
+    """
     feature_matrix = np.array(feature_matrix)
     output = np.array(output).ravel()
     weights = np.array(weights).ravel()
@@ -27,7 +35,8 @@ def lr_cost_function(feature_matrix, weights, output, l2_penalty):
 
 # return
 # n-dim vector (np.array)
-def lr_derivative(weights, feature_matrix, output, l2_penalty):
+def lr_derivative(feature_matrix, weights, output, l2_penalty) -> np.ndarray:
+    output = output.ravel()
     predictions = np.dot(feature_matrix, weights)
     errors = np.array(predictions - output)
 
@@ -38,6 +47,8 @@ def lr_derivative(weights, feature_matrix, output, l2_penalty):
     # derivatives = 2 * np.dot(errors, feature_matrix)
     derivatives = np.dot(errors, feature_matrix) / m
     derivatives = derivatives.ravel()
+
+    # do not regularize the constant term
     derivatives = np.append(derivatives[:-1] + l2_penalty * weights[:-1] / m, derivatives[-1])
 
     return derivatives.ravel()

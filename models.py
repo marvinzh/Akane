@@ -36,14 +36,14 @@ class LinearRegressionModel(Model):
         self.weights = weights
 
     def predict(self, data):
-        data['(constant)'] = 1.
+        d = data.copy()
+        d['(constant)'] = 1.
 
         features = list(self.weights.index)
-        data_matrix = np.array(data.loc[:, features])
-
+        feature_matrix = np.array(d.loc[:, features])
         weights = np.array(self.weights)
+        prediction = np.dot(feature_matrix, weights)
 
-        prediction = np.dot(data_matrix, weights)
         return prediction
 
 
@@ -263,7 +263,7 @@ class NeuralNetworkModel(Model):
 
 
 class KMeansModel(Model):
-    def __init__(self, profile, detail, k, centroids, assignments, heterogeneity,distance_func):
+    def __init__(self, profile, detail, k, centroids, assignments, heterogeneity, distance_func):
         super(KMeansModel, self).__init__(profile, detail)
         self.type = dic["KM_M"]
 
@@ -300,26 +300,25 @@ class GaussianMixureModel(Model):
 
         return np.array(assignments)
 
-
-# if __name__ == '__main__':
-#     profile = [
-#         #  Num of data points
-#         1000,
-#         #  num of feature
-#         123,
-#         # num of input
-#         124,
-#         # solver
-#         "test solver",
-#     ]
-#     details = [
-#         # num of iteration
-#         123,
-#         #  elapse time
-#         123.456,
-#         # cost
-#         12345678,
-#     ]
-#     model = LinearRegressionModel([1, 2, 3], profile, details)
-#     # print(model.weights)
+    # if __name__ == '__main__':
+    #     profile = [
+    #         #  Num of data points
+    #         1000,
+    #         #  num of feature
+    #         123,
+    #         # num of input
+    #         124,
+    #         # solver
+    #         "test solver",
+    #     ]
+    #     details = [
+    #         # num of iteration
+    #         123,
+    #         #  elapse time
+    #         123.456,
+    #         # cost
+    #         12345678,
+    #     ]
+    #     model = LinearRegressionModel([1, 2, 3], profile, details)
+    #     # print(model.weights)
     # model.model_profile()

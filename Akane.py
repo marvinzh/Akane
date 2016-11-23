@@ -14,16 +14,16 @@ dic = strings.AKANE_EN
 
 
 def linear_regression(dataset: pd.DataFrame,
-                      target: list(str),
-                      features: list(str),
+                      target: list,
+                      features: list,
                       initial_weights: list = None,
                       l1_penalty: float = 0.,
                       l2_penalty: float = 0.,
                       step_size: float = 0.,
                       max_iteration: int = 0,
-                      solver='auto',
+                      solver: str = 'auto',
                       tolerance: float = 0.,
-                      silent_mode: bool = False):
+                      silent_mode: bool = False) -> models.Model:
     """
     Function to create a Simple Linear Regression model, by adding L1 or L2 penalty term, to use the Lasso/Ridge
     Regression, Elastic Net. Note that if you add L1 penalty(set L1_penalty non-zero) to model, akane will be forced
@@ -50,13 +50,18 @@ def linear_regression(dataset: pd.DataFrame,
     weights = np.zeros(len(features)) if initial_weights is None else np.array(initial_weights)
     output = dataset[target]
 
-    training_features = features
+    training_features = features.copy()
     costs = 0.
 
+    # add constant term if data did not include it
     if "(constant)" not in list(feature_matrix_data.columns):
         feature_matrix_data['(constant)'] = 1.
         training_features += ['(constant)']
         weights = np.append(weights, [0.])
+
+    feature_matrix_data = feature_matrix_data.astype('float64')
+
+    feature_matrix = np.array(feature_matrix_data)
 
     if solver == 'auto':
         raise NoImplementationError("No Implementation yet!")
@@ -73,7 +78,7 @@ def linear_regression(dataset: pd.DataFrame,
     elif solver == 'least_square':
         weights, costs = regression.lr_least_square(feature_matrix_data, output, l2_penalty)
     elif solver == "gradient_descent":
-        weights, costs = regression.gradient_descent(feature_matrix_data,
+        weights, costs = regression.gradient_descent(feature_matrix,
                                                      output,
                                                      weights,
                                                      regression.lr_cost_function,
@@ -83,17 +88,17 @@ def linear_regression(dataset: pd.DataFrame,
                                                      l2_penalty,
                                                      silent_mode)
     elif solver == "lbfgs":
-        weights, costs, max_iteration = utilities.l_bfgs(training_features,
+        weights, costs, max_iteration = utilities.l_bfgs(feature_matrix,
                                                          output,
                                                          weights,
                                                          regression.lr_cost_function,
-                                                         lambda a, b, c, d: regression.lr_derivative(b, a, c, d),
+                                                         regression.lr_derivative,
                                                          iter_times=max_iteration,
                                                          l2_penalty=l2_penalty,
                                                          silent_mode=silent_mode
                                                          )
     else:
-        raise InvalidParamError("Akane do not understand parameter solver=%s" % solver)
+        raise InvalidParamError("Akane do not understand parameter solver = %s" % solver)
 
     weights = pd.Series(weights, index=training_features)
 
