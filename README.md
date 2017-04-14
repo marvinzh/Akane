@@ -20,7 +20,7 @@ Akane is a collection of Machine Learning algorithms for Regression, Classificat
 - **Clustering**
 	- k-means
 	- nearest neighbor
-	- gaussion mixure model(trained by EM)
+	- Gaussian mixure model(trained by EM)
 
 I implemented these algorithms from scratch. currently, there are still lots of works to be done (e.g. advanced model, test unit, dev documentation, examples, and API documentation), and the struct of this software are not good. Therefore, I'm planning to spend few years woking on it. There is a TODO list in the below I made to show you what I'm doing now. after finishing the test unit module, I will refactor this software. 
 
