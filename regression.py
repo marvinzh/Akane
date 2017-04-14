@@ -109,6 +109,7 @@ def coordinate_descent_step(j, feature_matrix, weights, output, l1_penalty=0., l
     output = np.array(output).ravel()
     weights = np.array(weights).ravel()
 
+    # feature and weight without j-th value
     feature_minus_j = np.append(feature_matrix[:, :j], feature_matrix[:, j + 1:], axis=1)
     weights_minus_j = np.append(weights[:j], weights[j + 1:])
 
@@ -118,12 +119,16 @@ def coordinate_descent_step(j, feature_matrix, weights, output, l1_penalty=0., l
     rho = np.dot(errors, feature_matrix[:, j])
     z = np.dot(feature_matrix[:, j], feature_matrix[:, j])
 
+    # do not optimize constant term
     if j == (len(weights) - 1):
         update_weight = rho
+    # when w_j < 0
     elif rho < -l1_penalty / 2.:
         update_weight = (rho + l1_penalty / 2) / (z + l2_penalty)
+    # when w_j > 0
     elif rho > l1_penalty / 2.:
         update_weight = (rho - l1_penalty / 2) / (z + l2_penalty)
+    # when w_j = 0
     else:
         update_weight = 0.
 
@@ -144,6 +149,8 @@ def coordinate_descent(feature_matrix,
 
     reporter = message.Reporter(silent_mode)
 
+    costs =[]
+
     reporter.report(dic["STAT_CD"])
     for i in range(iter_times):
         max_step_size = 0
@@ -152,10 +159,16 @@ def coordinate_descent(feature_matrix,
             weights[j] = coordinate_descent_step(j, feature_matrix, weights, output, l1_penalty=l1_penalty,
                                                  l2_penalty=l2_penalty)
             change = abs(old_weight - weights[j])
+
             if change > max_step_size:
                 max_step_size = change
+
+        cost = lr_cost_function(feature_matrix, weights, output, l2_penalty)
+        costs.append(cost)
+        reporter.report("%10s:\t%d\t\t%10s:%f" % (
+            dic['ITER'], i, dic['COST'], cost))
 
         if max_step_size < tolerance:
             break
 
-    return weights
+    return weights, costs

@@ -21,23 +21,24 @@ def normalize(dataset, features, norm_type):
         return normalize_rescaling(dataset, features)
 
 
-def normalize_std(dataset, features):
-    dataset_norm = dataset.astype('float64')
-    features = list(dataset.columns) if features == [] else features
+# def normalize_std(dataset, features):
+#     dataset_norm = dataset.astype('float64')
+#     features = list(dataset.columns) if features == [] else features
 
-    for feature in features:
-        feature_mean = dataset_norm[feature].mean()
-        feature_std = 1 if dataset_norm[feature].std() == 0. else dataset_norm[feature].std()
-        dataset_norm.loc[:, feature] = dataset_norm[feature].apply(lambda x: (x - feature_mean) / feature_std)
+#     for feature in features:
+#         feature_mean = dataset_norm[feature].mean()
+#         feature_std = 1 if dataset_norm[feature].std() == 0. else dataset_norm[feature].std()
+#         dataset_norm.loc[:, feature] = dataset_norm[feature].apply(lambda x: (x - feature_mean) / feature_std)
 
-    return dataset_norm
+#     return dataset_norm
 
 
 def normalize_rescaling(dataset, features):
-    dataset_norm = dataset.astype('float64')
+    dataset_norm = dataset.copy()
     features = list(dataset.columns) if features == [] else features
 
     for feature in features:
+        dataset_norm.loc[:,feature] = dataset_norm[feature].astype('float64')
         feature_min = dataset_norm[feature].min()
         feature_max = dataset_norm[feature].max()
         length = 1. if (feature_max - feature_min) == 0. else feature_max - feature_min
@@ -93,6 +94,16 @@ def normalize_features(feature_matrix):
     normalized_feature = feature_matrix / norms
     return normalized_feature, norms
 
+def normalize_std(dataset, features):
+    dataset_norm = dataset.copy()
+    features = list(dataset.columns) if features == [] else features
+
+    for feature in features:
+        dataset_norm.loc[:,feature] = dataset_norm[feature].astype('float64')
+        norm = np.linalg.norm(dataset_norm[feature], axis=0)
+        dataset_norm.loc[:, feature] = dataset_norm[feature].apply(lambda x: x / norm)
+
+    return dataset_norm
 
 def euclidean_distance(target, dataset, weights=None):
     target = np.array(target, dtype='float64')
@@ -166,6 +177,34 @@ def one_hot_encoder(vector, num_of_class):
 
     return code
 
+def train_test_spilt(dataset, train, test=0., valid=0.):
+    if test == 0:
+        test = 1 - train
+    elif valid == 0:
+        valid = 1 - train - test
+
+    #  define some useful variables
+    num_data = len(dataset)
+    num_train = int(num_data * train)
+    num_test = int(num_data * test)
+    num_valid = int(num_data * valid)
+    
+    train_test_indices = np.random.choice(num_data,num_train + num_test, replace = False)
+    
+    valid_indices = list(set(range(num_data)) - set(train_test_indices))
+    
+    train_indices_indices = (np.random.choice(num_train + num_test, num_train,replace =False))
+    test_indices_indices= list(set(range(len(train_test_indices))) - set(train_indices_indices))
+    
+    train_indices = train_test_indices[train_indices_indices]
+    test_indices = train_test_indices[test_indices_indices]
+    
+    
+    rnt = [dataset.iloc[train_indices], dataset.iloc[test_indices]]
+    if valid != 0.:
+        rnt.append(dataset.iloc[valid_indices])
+    
+    return tuple(rnt)
 
 # cost_function@param receive at least 4 parameter: feature_matrix,weights,output
 # calculate_derivative@param receive at least 4 parameter: feature_matrix,weights,output

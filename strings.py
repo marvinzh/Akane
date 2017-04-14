@@ -7,8 +7,8 @@ AKANE_EN = {
     "NUM_OF_LAYER":"Number of Layer",
     "SOLVER": "Solver",
     "ITER": "Iteration",
-    "EPS_TIME": "Elapse Time",
-    "T_RSS": "Training RSS",
+    "EPS_TIME": "Elapsed Time",
+    "T_RSS": "Final Training RSS",
     "COMPLETE": "Complete!",
     "L1_P": "L1 Penalty",
     "L2_P": "L2_Penalty",
@@ -24,8 +24,8 @@ MODEL_REPORTER_EN = {
     "NUM_OF_CO": "Number Of Coefficient",
     "SOLVER": "Solver",
     "ITER": "Iteration",
-    "EPS_TIME": "Elapse Time",
-    "T_RSS": "Training RSS",
+    "EPS_TIME": "Elapsed Time",
+    "T_RSS": "Final Training RSS",
     "COMPLETE": "Complete!",
 }
 UTILITIES_EN = {

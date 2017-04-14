@@ -34,6 +34,7 @@ class LinearRegressionModel(Model):
         self.type = dic["LINEAR_M"]
 
         self.weights = weights
+        self.features = list(self.weights.index)
 
     def predict(self, data):
         d = data.copy()
@@ -45,6 +46,12 @@ class LinearRegressionModel(Model):
         prediction = np.dot(feature_matrix, weights)
 
         return prediction
+
+    def score(self, data, y):
+    	prediction = self.predict(data)
+    	errors = prediction - y
+    	RSS = np.dot(errors,errors) / len(data)
+    	return RSS
 
 
 class NearestNeighbourModel(Model):
@@ -107,15 +114,17 @@ class NearestNeighbourModel(Model):
 
 
 class KernelRegressionModel(Model):
-    def __init__(self, profile, detail, feature_matrix, target, kernel):
+    def __init__(self, profile, detail, feature_matrix, target, features, kernel):
         super(KernelRegressionModel, self).__init__(profile, detail)
         self.type = dic["KERNEL_M"]
 
         self.data_matrix = np.array(feature_matrix)
         self.target = np.array(target)
         self.kernel = kernel
+        self.features = features
 
-    def predict(self, data, kernel=None):
+    def predict(self, dataset, kernel=None):
+        data = dataset.loc[:,self.features]
         data = np.array(data, dtype='float64')
         if kernel is None:
             kernel = self.kernel
@@ -129,7 +138,8 @@ class KernelRegressionModel(Model):
         weights = np.array(list(
             map(lambda x: kernel(x), error)
         ))
-        print(len(weights))
+
+        # print(len(weights))
         denominator = weights.sum(axis=1)
 
         prediction = np.dot(weights, target) / denominator

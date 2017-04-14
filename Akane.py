@@ -56,18 +56,20 @@ def linear_regression(dataset: pd.DataFrame,
     # add constant term if data did not include it
     if "(constant)" not in list(feature_matrix_data.columns):
         feature_matrix_data['(constant)'] = 1.
-        training_features += ['(constant)']
+        # training_features = training_features.append('(constant)')
+        features.append('(constant)')
         weights = np.append(weights, [0.])
 
     feature_matrix_data = feature_matrix_data.astype('float64')
 
     feature_matrix = np.array(feature_matrix_data)
 
+
     if solver == 'auto':
         raise NoImplementationError("No Implementation yet!")
 
-    if l1_penalty != 0.:
-        weights = regression.coordinate_descent(feature_matrix_data,
+    if l1_penalty != 0. or solver =='coordinate_descent':
+        weights,costs = regression.coordinate_descent(feature_matrix_data,
                                                 weights,
                                                 output,
                                                 max_iteration,
@@ -100,9 +102,9 @@ def linear_regression(dataset: pd.DataFrame,
     else:
         raise InvalidParamError("Akane do not understand parameter solver = %s" % solver)
 
-    weights = pd.Series(weights, index=training_features)
+    weights = pd.Series(weights, index=features)
 
-    costs = np.array(costs) if type(costs) == list else costs
+    costs = np.array(costs) if type(costs) == list else np.array([costs])
     elapse = time.time() - start_timestamp
 
     profile = {
@@ -122,10 +124,13 @@ def linear_regression(dataset: pd.DataFrame,
     if l2_penalty != 0:
         details[dic['L2_P']] = l2_penalty
 
+    model = models.LinearRegressionModel(profile, details, weights)
+
+    details[dic['T_RSS']] = costs[-1]
     message.model_reporter(
         silent_mode, "Linear Regression", profile, details)
 
-    model = models.LinearRegressionModel(profile, details, weights)
+    
 
     return model
 
@@ -241,7 +246,7 @@ def nearest_neighbor(dataset,
     return model
 
 
-def kernel_regression(dataset, features, target, kernel, silent_mode):
+def kernel_regression(dataset, features, target, kernel=lambda x:utilities.gaussian_kernel(x,1.), silent_mode=False):
     start_timestamp = time.time()
     feature_matrix = dataset.loc[:, features]
     target_vector = dataset.loc[:, target]
@@ -255,7 +260,7 @@ def kernel_regression(dataset, features, target, kernel, silent_mode):
         dic['EPS_TIME']: elapse,
     }
 
-    model = models.KernelRegressionModel(profile, detail, feature_matrix, target_vector, kernel)
+    model = models.KernelRegressionModel(profile, detail, feature_matrix, target_vector, features, kernel)
     message.model_reporter(silent_mode, "Kernel Regression", profile, detail)
 
     return model

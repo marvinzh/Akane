@@ -241,6 +241,4 @@ def em_for_gmm(data, init_means, init_covariances, init_weights, max_iter=1000, 
 #         [19, 5]
 #     ])
 #     label = np.array([0, 1, 0])
-#     # print(assign_cluster(data, centroid, utilities.euclidean_distance))
-#     # print(revise_centroids(data, label, 2))
-#     print(initialize_centroid(data, 2, method='kmeans++', seed=1))
+
