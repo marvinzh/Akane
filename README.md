@@ -32,8 +32,7 @@ I implemented these algorithms from scratch. currently, there are still lots of 
 - PyLBFGS(0.2.0.3)+
 
 ### TODO List
-- EM Implementation
-- KD-tree and Locality Sensitive Hashing(LSH) implementation (for nearest neighbour)
+- KD-tree implementation (for nearest neighbour)
 - Support Vector Machine Implementation
 - practical examples
 - development notes
@@ -42,4 +41,4 @@ I implemented these algorithms from scratch. currently, there are still lots of 
 
 
 ### Update notes
-- *2016-11-16* **add k-means algorithm**
+- *2016-11-16* **add k-means algorithm EM Implementation Locality Sensitive Hashing(LSH) implementation (for nearest neighbour)**
